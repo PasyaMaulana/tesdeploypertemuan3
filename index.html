@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luffy's Gear Journey — One Piece</title>
+
+  <!-- =====================================================
+       CSS EKSTERNAL — style.css
+       Isi: reset, variabel warna, body background,
+            container, typography global, responsive
+  ====================================================== -->
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+
+  <!-- =====================================================
+       CSS INTERNAL — khusus halaman ini
+       Isi: hero, gear card timeline, popup modal,
+            overlay, animasi, badge, footer
+  ====================================================== -->
+  <style>
+
+    /* === HERO === */
+    .hero {
+      text-align: center;
+      padding: 56px 20px 36px;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #ff8844;
+      border: 1px solid rgba(255,136,68,0.3);
+      padding: 5px 16px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(22px, 5vw, 48px);
+      color: #fff;
+      text-shadow: 0 0 40px rgba(255,100,0,0.6);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .hero h2 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(12px, 2vw, 16px);
+      color: #666;
+      letter-spacing: 3px;
+      margin-bottom: 18px;
+    }
+    .hero-desc {
+      max-width: 560px;
+      margin: 0 auto;
+      color: #aaa;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    /* === DIVIDER === */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 32px 0;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255,100,0,0.5), transparent);
+    }
+    .divider span { color: #ff6600; font-size: 18px; }
+
+    /* === SECTION TITLE === */
+    .section-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(14px, 2.5vw, 20px);
+      color: #fff;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .section-sub {
+      text-align: center;
+      font-family: 'Lato', sans-serif;
+      font-size: 12px;
+      color: #555;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+
+    /* === GEAR CARD TIMELINE === */
+    .gear-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      margin-bottom: 50px;
+    }
+
+    .gear-card {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* Hint "klik" saat hover */
+    .gear-card:hover {
+      transform: translateX(8px);
+      box-shadow: -8px 0 40px rgba(0,0,0,0.5);
+    }
+
+    /* Stripe warna kiri */
+    .gear-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: 4px 0 0 4px;
+    }
+
+    /* Badge "KLIK" di pojok */
+    .click-hint {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-family: 'Lato', sans-serif;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.3);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 3px 8px;
+      border-radius: 10px;
+      transition: opacity 0.3s;
+      text-transform: uppercase;
+    }
+    .gear-card:hover .click-hint {
+      color: rgba(255,255,255,0.7);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    /* Gambar / Placeholder */
+    .card-img-wrap {
+      position: relative;
+      overflow: hidden;
+      height: 200px;
+    }
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .gear-card:hover .card-img-wrap img { transform: scale(1.07); }
+    .card-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.05), rgba(10,10,18,0.35));
+      pointer-events: none;
+    }
+
+    /* Placeholder */
+    .placeholder {
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: 'Lato', sans-serif;
+    }
+    .placeholder-icon { font-size: 46px; }
+    .placeholder-text { font-size: 10px; letter-spacing: 2px; opacity: 0.4; text-transform: uppercase; }
+
+    /* Card Body */
+    .card-body {
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+    }
+    .gear-number {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      opacity: 0.45;
+    }
+    .gear-name {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(13px, 2vw, 18px);
+      line-height: 1.3;
+    }
+    .gear-short {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      color: #999;
+      line-height: 1.6;
+    }
+    .gear-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Lato', sans-serif;
+      font-size: 11px;
+      padding: 3px 12px;
+      border-radius: 20px;
+      border: 1px solid;
+      width: fit-content;
+    }
+
+    /* Warna per Gear */
+    .gear-1::before { background: #4488ff; }
+    .gear-1:hover { border-color: rgba(68,136,255,0.4); box-shadow: -8px 0 40px rgba(68,136,255,0.1); }
+    .gear-1 .placeholder { background: linear-gradient(135deg,#0d1a3a,#1a2a5a); color:#88aaff; }
+    .gear-1 .gear-name { color: #88aaff; }
+    .gear-1 .gear-tag { color:#88aaff; border-color:rgba(100,150,255,0.35); background:rgba(100,150,255,0.06); }
+
+    .gear-2::before { background: #ff3300; }
+    .gear-2:hover { border-color: rgba(255,60,0,0.4); box-shadow: -8px 0 40px rgba(255,60,0,0.1); }
+    .gear-2 .placeholder { background: linear-gradient(135deg,#2a0a00,#4a1500); color:#ff6644; }
+    .gear-2 .gear-name { color: #ff6644; }
+    .gear-2 .gear-tag { color:#ff6644; border-color:rgba(255,80,40,0.35); background:rgba(255,80,40,0.06); }
+
+    .gear-3::before { background: #44cc44; }
+    .gear-3:hover { border-color: rgba(68,200,68,0.4); box-shadow: -8px 0 40px rgba(68,200,68,0.1); }
+    .gear-3 .placeholder { background: linear-gradient(135deg,#0a1f0a,#0f2f0f); color:#66dd66; }
+    .gear-3 .gear-name { color: #66dd66; }
+    .gear-3 .gear-tag { color:#66dd66; border-color:rgba(80,200,80,0.35); background:rgba(80,200,80,0.06); }
+
+    .gear-4::before { background: #ffaa00; }
+    .gear-4:hover { border-color: rgba(255,170,0,0.4); box-shadow: -8px 0 40px rgba(255,170,0,0.1); }
+    .gear-4 .placeholder { background: linear-gradient(135deg,#1f1500,#2f2000); color:#ffcc44; }
+    .gear-4 .gear-name { color: #ffcc44; }
+    .gear-4 .gear-tag { color:#ffcc44; border-color:rgba(255,180,40,0.35); background:rgba(255,180,40,0.06); }
+
+    .gear-5::before { background: linear-gradient(to bottom,#ffffff,#ff8844); }
+    .gear-5 { border-color: rgba(255,150,50,0.15); box-shadow: 0 0 30px rgba(255,100,0,0.06); }
+    .gear-5:hover { border-color: rgba(255,150,50,0.5); box-shadow: -8px 0 40px rgba(255,150,50,0.15); }
+    .gear-5 .placeholder { background: linear-gradient(135deg,#1a1008,#2a1a0a); color:#fff8ee; }
+    .gear-5 .gear-name { color:#fff; text-shadow:0 0 20px rgba(255,150,50,0.6); }
+    .gear-5 .gear-tag { color:#ff8844; border-color:rgba(255,136,68,0.35); background:rgba(255,136,68,0.06); }
+
+    /* =====================================================
+       POPUP MODAL
+       Muncul saat card diklik — berisi info lengkap gear
+       Dikendalikan via JavaScript (onclick, classList)
+    ===================================================== */
+
+    /* Overlay gelap di belakang modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Kotak modal */
+    .modal {
+      background: #12121e;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      max-width: 540px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      transform: translateY(30px) scale(0.96);
+      transition: transform 0.35s ease;
+    }
+    .modal-overlay.active .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    /* Header modal dengan gambar */
+    .modal-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      object-position: top;
+      border-radius: 20px 20px 0 0;
+      display: block;
+    }
+
+    /* Placeholder modal jika belum ada gambar */
+    .modal-placeholder {
+      width: 100%;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border-radius: 20px 20px 0 0;
+    }
+    .modal-placeholder .placeholder-icon { font-size: 60px; }
+    .modal-placeholder .placeholder-text { font-size: 12px; letter-spacing: 2px; opacity: 0.4; }
+
+    /* Body konten modal */
+    .modal-body {
+      padding: 24px 28px 28px;
+    }
+    .modal-gear-num {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      opacity: 0.4;
+      margin-bottom: 6px;
+    }
+    .modal-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(18px, 3vw, 26px);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .modal-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      opacity: 0.5;
+      margin-bottom: 18px;
+    }
+
+    /* Garis pemisah dalam modal */
+    .modal-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+      margin: 18px 0;
+    }
+
+    /* Deskripsi panjang */
+    .modal-desc {
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      color: #bbbbbb;
+      line-height: 1.85;
+      margin-bottom: 18px;
+    }
+
+    /* Stats row (Debut, Musuh, dll) */
+    .modal-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .stat-item {
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+    .stat-label {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      opacity: 0.4;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .stat-value {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      color: #eeeeee;
+      font-weight: 700;
+    }
+
+    /* List kemampuan */
+    .modal-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 20px;
+    }
+    .modal-list li {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      color: #bbbbbb;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      margin-bottom: 6px;
+      border-left: 3px solid;
+      line-height: 1.5;
+    }
+
+    /* Tombol tutup (X) */
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      z-index: 10;
+    }
+    .modal-close:hover { background: rgba(200,0,0,0.5); }
+
+    /* Tombol tutup di bawah */
+    .modal-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-btn:hover { background: rgba(255,255,255,0.1); }
+
+    /* === QUOTE & FOOTER === */
+    .quote-wrap {
+      text-align: center;
+      padding: 30px 20px;
+    }
+    .quote-wrap blockquote {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(13px, 2.5vw, 19px);
+      color: #ff8844;
+      line-height: 1.6;
+      text-shadow: 0 0 30px rgba(255,100,0,0.3);
+      margin-bottom: 10px;
+    }
+    .quote-wrap cite {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #444;
+    }
+
+    .site-footer {
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.904);
+      font-family: 'Lato', sans-serif;
+      color: #ffffff;
+      font-size: 12px;
+      letter-spacing: 1px;
+      line-height: 2;
+    }
+
+    @media (max-width: 580px) {
+      .gear-card { grid-template-columns: 1fr; }
+      .card-img-wrap { height: 180px; }
+      .modal-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-eyebrow">One Piece — Eiichiro Oda</div>
+      <h1>Monkey D. Luffy</h1>
+      <h2>THE GEAR JOURNEY</h2>
+      <!-- CSS INLINE: highlight warna per kata -->
+      <p class="hero-desc" style="margin-top: 14px;">
+        Dari <strong style="color:#88aaff;">Gear 1</strong> hingga
+        <strong style="color:#ff8844;">Gear 5</strong> —
+        perjalanan epik Luffy menguasai kekuatan buah iblisnya.
+        <em style="color:#666; font-size:12px; display:block; margin-top:8px;">
+          ✦ Klik kartu untuk melihat info lengkap setiap Gear
+        </em>
+      </p>
+    </section>
+
+    <div class="divider"><span>⚡</span></div>
+
+    <div class="section-title">Perjalanan 5 Gear</div>
+    <p class="section-sub">Klik kartu untuk detail lengkap</p>
+
+    <!-- ===== 5 GEAR CARDS ===== -->
+    <div class="gear-timeline">
+
+      <!-- GEAR 1 -->
+      <div class="gear-card gear-1" onclick="openModal('gear1')">
+        <div class="card-img-wrap">
+          <img src="gear1.gif" alt="Luffy Gear 1"
+            onerror="this.style.display='none'; document.getElementById('ph-gear1').style.display='flex';" />
+          <div class="placeholder" id="ph-gear1" style="display:none;">
+            <div class="placeholder-icon">👊</div>
+            <div class="placeholder-text">Letakkan gear1.gif</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="gear-number">GEAR · 01</div>
+          <div class="gear-name">Base Form</div>
+          <!-- CSS INLINE: opacity lebih terang untuk Gear 1 -->
+          <p class="gear-short" style="opacity:0.85;">Kemampuan dasar Gomu Gomu no Mi — tubuh elastis seperti karet.</p>
+          <div class="gear-tag">🍎 Gomu Gomu no Mi</div>
+        </div>
+        <div class="click-hint">✦ Detail</div>
+      </div>
+
+      <!-- GEAR 2 -->
+      <div class="gear-card gear-2" onclick="openModal('gear2')">
+        <div class="card-img-wrap" id="wrap-gear2">
+          <img src="gear2.gif" alt="Luffy Gear 2"
+            onerror="this.style.display='none'; document.getElementById('ph-gear2').style.display='flex';" />
+          <div class="placeholder" id="ph-gear2" style="display:none;">
+            <div class="placeholder-icon">💨</div>
+            <div class="placeholder-text">Letakkan gear2.gif</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="gear-number">GEAR · 02</div>
+          <div class="gear-name">Jet Mode</div>
+          <p class="gear-short">Memompa darah lebih cepat — tubuh beruap merah, kecepatan ekstrem.</p>
+          <div class="gear-tag">🔥 Kecepatan Uap</div>
+        </div>
+        <div class="click-hint">✦ Detail</div>
+      </div>
+
+      <!-- GEAR 3 -->
+      <div class="gear-card gear-3" onclick="openModal('gear3')">
+        <div class="card-img-wrap" id="wrap-gear3">
+          <img src="gear3.gif" alt="Luffy Gear 3"
+            onerror="this.style.display='none'; document.getElementById('ph-gear3').style.display='flex';" />
+          <div class="placeholder" id="ph-gear3" style="display:none;">
+            <div class="placeholder-icon">💪</div>
+            <div class="placeholder-text">Letakkan gear3.gif</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="gear-number">GEAR · 03</div>
+          <div class="gear-name">Giant Mode</div>
+          <p class="gear-short">Meniup udara ke dalam tulang — anggota tubuh membesar seperti raksasa.</p>
+          <div class="gear-tag">🦴 Tinju Raksasa</div>
+        </div>
+        <div class="click-hint">✦ Detail</div>
+      </div>
+
+      <!-- GEAR 4 -->
+      <div class="gear-card gear-4" onclick="openModal('gear4')">
+        <div class="card-img-wrap" id="wrap-gear4">
+          <img src="gear4.gif" alt="Luffy Gear 4"
+            onerror="this.style.display='none'; document.getElementById('ph-gear4').style.display='flex';" />
+          <div class="placeholder" id="ph-gear4" style="display:none;">
+            <div class="placeholder-icon">⚫</div>
+            <div class="placeholder-text">Letakkan gear4.gif</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="gear-number">GEAR · 04</div>
+          <div class="gear-name">Boundman</div>
+          <p class="gear-short">Menggabungkan Haki Senjata dengan elastisitas — terbang dan bertarung.</p>
+          <div class="gear-tag">⚫ Haki + Elastis</div>
+        </div>
+        <div class="click-hint">✦ Detail</div>
+      </div>
+
+      <!-- GEAR 5 -->
+      <div class="gear-card gear-5" onclick="openModal('gear5')">
+        <div class="card-img-wrap">
+          <img src="gear5.gif" alt="Luffy Gear 5 — Sun God Nika"
+            onerror="this.src='luffy.gif';" />
+        </div>
+        <div class="card-body">
+          <div class="gear-number">GEAR · 05</div>
+          <div class="gear-name">Sun God Nika</div>
+          <!-- CSS INLINE: font sedikit lebih besar untuk highlight Gear 5 -->
+          <p class="gear-short" style="font-size:14px;">Kebangkitan sejati — realita berubah layaknya kartun tanpa batas.</p>
+          <div class="gear-tag" style="box-shadow:0 0 12px rgba(255,136,68,0.25);">☀ Sun God Awakening</div>
+        </div>
+        <div class="click-hint">✦ Detail</div>
+      </div>
+
+    </div><!-- end gear-timeline -->
+
+    <div class="divider"><span>☀</span></div>
+
+    <!-- QUOTE -->
+    <div class="quote-wrap">
+      <blockquote>"Aku akan menjadi Raja Bajak Laut!"</blockquote>
+      <cite>— MONKEY D. LUFFY</cite>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <p>Praktikum Web — Pertemuan 2 &copy; 2025</p>
+      <p>One Piece &copy; Eiichiro Oda / Shueisha</p>
+    </footer>
+
+  </div><!-- end container -->
+
+  <!-- =====================================================
+       POPUP MODAL
+       Satu modal yang diisi secara dinamis oleh JavaScript
+       berdasarkan gear mana yang diklik
+  ====================================================== -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeOnOverlay(event)">
+    <div class="modal" id="modalBox">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       JAVASCRIPT (INLINE SCRIPT)
+       Fungsi: openModal(gearId) — isi dan tampilkan modal
+               closeModal()      — sembunyikan modal
+               closeOnOverlay()  — tutup jika klik di luar
+       Data tiap gear disimpan dalam objek gearData{}
+  ====================================================== -->
+  <script>
+    // =====================================================
+    // DATA TIAP GEAR
+    // =====================================================
+    const gearData = {
+      gear1: {
+        num: 'GEAR · 01',
+        title: 'Base Form',
+        subtitle: 'Gomu Gomu no Mi — Kemampuan Dasar',
+        color: '#88aaff',
+        accentBg: 'linear-gradient(135deg,#0d1a3a,#1a2a5a)',
+        icon: '👊',
+        imgSrc: 'gear1.gif',
+        useRealImg: true,
+        desc: 'Gear 1 adalah kemampuan dasar dari buah iblis Gomu Gomu no Mi yang dimakan Luffy sejak kecil. Buah ini mengubah seluruh tubuhnya menjadi karet — elastis, tahan peluru, dan bisa diregangkan sepanjang apapun. Meski terlihat sederhana, Luffy terus mengembangkan teknik-teknik kreatif dari kemampuan ini sepanjang perjalanannya.',
+        stats: [
+          { label: 'Debut Chapter', value: 'Chapter 1' },
+          { label: 'Arc Pertama', value: 'Romance Dawn' },
+          { label: 'Jenis Buah', value: 'Paramecia' },
+          { label: 'Kelemahan', value: 'Air Laut' },
+        ],
+        abilities: [
+          '🤜 Gum-Gum Pistol — pukulan karet jarak jauh',
+          '🪃 Gum-Gum Bazooka — serangan dua tangan bersamaan',
+          '🌀 Gum-Gum Gatling — tembakan beruntun cepat',
+          '🛡 Gum-Gum Balloon — menggembung menahan peluru',
+        ],
+        listColor: '#4488ff',
+      },
+      gear2: {
+        num: 'GEAR · 02',
+        title: 'Jet Mode',
+        subtitle: 'Kecepatan Uap Darah',
+        color: '#ff6644',
+        accentBg: 'linear-gradient(135deg,#2a0a00,#4a1500)',
+        icon: '💨',
+        imgSrc: 'gear2.gif',
+        useRealImg: true,
+        desc: 'Gear 2 pertama kali diungkap di arc Enies Lobby saat melawan Rob Lucci. Luffy memompa darahnya lebih cepat dengan cara seperti pompa hidrolik menggunakan kakinya yang terbuat dari karet. Hasilnya, metabolisme meningkat drastis — tubuh mengeluarkan uap merah panas dan kecepatan serta kekuatan serangan meningkat berlipat ganda.',
+        stats: [
+          { label: 'Debut Chapter', value: 'Chapter 387' },
+          { label: 'Arc Debut', value: 'Enies Lobby' },
+          { label: 'Efek Samping', value: 'Tubuh cepat lelah' },
+          { label: 'Kombinasi', value: 'Gear 2 + Haki' },
+        ],
+        abilities: [
+          '⚡ Jet Pistol — pukulan secepat kilat',
+          '💥 Jet Bazooka — serangan ganda berkecepatan tinggi',
+          '🌪 Jet Gatling — rentetan serangan ultra-cepat',
+          '🦵 Jet Stamp — tendangan dengan kecepatan penuh',
+        ],
+        listColor: '#ff3300',
+      },
+      gear3: {
+        num: 'GEAR · 03',
+        title: 'Giant Mode',
+        subtitle: 'Tulang Raksasa',
+        color: '#66dd66',
+        accentBg: 'linear-gradient(135deg,#0a1f0a,#0f2f0f)',
+        icon: '💪',
+        imgSrc: 'gear3.gif',
+        useRealImg: true,
+        desc: 'Gear 3 memungkinkan Luffy meniupkan udara langsung ke dalam tulangnya yang terbuat dari karet, mengembungkannya hingga ukuran raksasa. Satu pukulan bisa menghancurkan kapal perang sekaligus. Kelemahannya, setelah efek berakhir tubuh Luffy mengecil sementara waktu layaknya anak kecil — efek samping komik yang lama-lama hilang setelah Luffy menguasainya.',
+        stats: [
+          { label: 'Debut Chapter', value: 'Chapter 418' },
+          { label: 'Arc Debut', value: 'Enies Lobby' },
+          { label: 'Efek Samping', value: 'Tubuh mengecil sementara' },
+          { label: 'Kekuatan', value: 'Menghancurkan kapal perang' },
+        ],
+        abilities: [
+          '👊 Gigant Pistol — pukulan sebesar raksasa',
+          '🌊 Gigant Axe — serangan banting ke bawah',
+          '🔥 Gigant Stamp — injakan raksasa',
+          '❄ Elephant Gun — versi lebih kuat dengan Haki',
+        ],
+        listColor: '#44cc44',
+      },
+      gear4: {
+        num: 'GEAR · 04',
+        title: 'Boundman / Snakeman',
+        subtitle: 'Haki + Elastisitas Penuh',
+        color: '#ffcc44',
+        accentBg: 'linear-gradient(135deg,#1f1500,#2f2000)',
+        icon: '⚫',
+        imgSrc: 'gear4.gif',
+        useRealImg: true,
+        desc: 'Gear 4 adalah hasil latihan Luffy selama 2 tahun di Rusukaina bersama Silvers Rayleigh. Ia menggabungkan Haki Senjata dengan elastisitas karetnya — memompa otot dengan udara sambil melapisnya dengan Haki. Hasilnya, tubuh Luffy diselimuti Haki hitam, bisa terbang memantul di udara, dan serangannya tak tertahankan. Ada dua varian utama: Boundman (kekuatan) dan Snakeman (kecepatan & teknik).',
+        stats: [
+          { label: 'Debut Chapter', value: 'Chapter 783' },
+          { label: 'Arc Debut', value: 'Dressrosa' },
+          { label: 'Varian', value: 'Boundman, Snakeman, Tankman' },
+          { label: 'Kombinasi', value: 'Haki Senjata + Karet' },
+        ],
+        abilities: [
+          '⚫ Kong Gun — pukulan Haki terkompresi super kuat',
+          '🐍 Python — serangan berbelok tak terduga (Snakeman)',
+          '🦁 Leo Bazooka — dorongan ganda berkekuatan penuh',
+          '🌀 Culverin — proyektil yang bisa berbelok mengejar musuh',
+        ],
+        listColor: '#ffaa00',
+      },
+      gear5: {
+        num: 'GEAR · 05',
+        title: 'Sun God Nika',
+        subtitle: 'Hito Hito no Mi, Model: Nika — Awakening',
+        color: '#ff8844',
+        accentBg: 'linear-gradient(135deg,#1a1008,#2a1a0a)',
+        icon: '☀',
+        imgSrc: 'gear5.gif',
+        useRealImg: true,
+        useRealImg: true,
+        desc: 'Gear 5 adalah bentuk tertinggi dan terkuat Luffy — kebangkitan sejati buah iblisnya yang ternyata bukan Gomu Gomu no Mi, melainkan Hito Hito no Mi, Model: Nika. Buah Mythical Zoan ini menjadikan Luffy perwujudan Sun God Nika, dewa matahari legenda yang dipercaya membawa kebebasan dan tawa kepada siapa pun yang ia temui. Dalam bentuk ini, realita di sekitar Luffy berubah layaknya kartun — tak ada batasan fisika.',
+        stats: [
+          { label: 'Debut Chapter', value: 'Chapter 1044' },
+          { label: 'Arc Debut', value: 'Wano Country' },
+          { label: 'Jenis Buah', value: 'Mythical Zoan' },
+          { label: 'Dicari', value: '800 Tahun oleh World Gov.' },
+        ],
+        abilities: [
+          '☀ Bajrang Gun — pukulan raksasa setinggi awan',
+          '🌍 Gum-Gum Dawn Whip — cambukan lingkup pulau',
+          '🎭 Lingkungan seperti kartun — bisa diubah bebas',
+          '😂 Tawa menular — menginspirasi semua sekutu',
+        ],
+        listColor: '#ff6600',
+      },
+    };
+
+    // =====================================================
+    // FUNGSI BUKA MODAL
+    // =====================================================
+    function openModal(gearId) {
+      const d = gearData[gearId];
+      if (!d) return;
+
+      // Bangun HTML isi modal
+      const imgHTML = d.useRealImg
+        ? `<img class="modal-img" src="${d.imgSrc}" alt="${d.title}"
+              onerror="this.style.display='none'; document.getElementById('modal-ph').style.display='flex';" />
+           <div id="modal-ph" class="modal-placeholder" style="display:none; background:${d.accentBg};">
+             <div class="placeholder-icon">${d.icon}</div>
+             <div class="placeholder-text" style="color:${d.color}">File tidak ditemukan: ${d.imgSrc}</div>
+           </div>`
+        : `<div class="modal-placeholder" style="${d.accentBg ? 'background:' + d.accentBg : ''}">
+             <div class="placeholder-icon">${d.icon}</div>
+             <div class="placeholder-text" style="color:${d.color}">Letakkan: ${d.imgSrc}</div>
+           </div>`;
+
+      const statsHTML = d.stats.map(s => `
+        <div class="stat-item">
+          <div class="stat-label">${s.label}</div>
+          <div class="stat-value" style="color:${d.color}">${s.value}</div>
+        </div>
+      `).join('');
+
+      const abilitiesHTML = d.abilities.map(a => `
+        <li style="border-color:${d.listColor}">${a}</li>
+      `).join('');
+
+      document.getElementById('modalContent').innerHTML = `
+        ${imgHTML}
+        <div class="modal-body">
+          <div class="modal-gear-num">${d.num}</div>
+          <div class="modal-title" style="color:${d.color}">${d.title}</div>
+          <div class="modal-subtitle">${d.subtitle}</div>
+          <div class="modal-divider"></div>
+          <p class="modal-desc">${d.desc}</p>
+          <div class="modal-stats">${statsHTML}</div>
+          <div class="modal-divider"></div>
+          <p style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; opacity:0.4; margin-bottom:10px;">KEMAMPUAN UTAMA</p>
+          <ul class="modal-list">${abilitiesHTML}</ul>
+          <button class="modal-btn" onclick="closeModal()" style="border-color:${d.color}33; color:${d.color}">
+            TUTUP
+          </button>
+        </div>
+      `;
+
+      document.getElementById('modalOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // =====================================================
+    // FUNGSI TUTUP MODAL
+    // =====================================================
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Tutup jika klik di luar kotak modal
+    function closeOnOverlay(e) {
+      if (e.target === document.getElementById('modalOverlay')) closeModal();
+    }
+
+    // Tutup dengan tombol Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+/* ============================================================
+   CSS EKSTERNAL — style.css
+   Dihubungkan via: <link rel="stylesheet" href="style.css" />
+
+   Isi: CSS Variables, Reset, Body & animated background,
+        Container, Typography global, HR, Scrollbar,
+        Responsive media query
+   ============================================================ */
+
+/* --- CSS Variables --- */
+:root {
+  --red:     #cc2200;
+  --orange:  #ff6600;
+  --bg:      #0a0a12;
+  --text:    #cccccc;
+  --dim:     #666666;
+}
+
+/* --- Reset --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Body & Background --- */
+body {
+  font-family: 'Lato', 'Segoe UI', sans-serif;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(204,34,0,0.2), transparent),
+    radial-gradient(ellipse 50% 50% at 90% 80%, rgba(255,100,0,0.06), transparent);
+  min-height: 100vh;
+  color: var(--text);
+  padding: 20px 16px 60px;
+}
+
+/* --- Container Utama --- */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 0 28px 28px;
+}
+
+/* --- Typography Global --- */
+p { line-height: 1.7; }
+strong { color: #fff; }
+em { font-style: italic; }
+code { font-family: monospace; }
+
+/* --- HR Global --- */
+hr {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  margin: 24px 0;
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #0a0a12; }
+::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  body { padding: 10px 8px 40px; }
+  .container { padding: 0 14px 20px; border-radius: 14px; }
+}
